@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квиз: Готовность к изучению английского языка</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+            margin: 0;
+        }
+        .quiz-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .question {
+            margin-bottom: 15px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>Квиз: Готовность к изучению английского языка</h1>
+    <div id="quiz"></div>
+    <button id="submitBtn">Отправить ответы</button>
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    const questions = [
+        { question: "Как часто вы используете английский язык?", options: ["Каждый день", "Несколько раз в неделю", "Редко", "Никогда"] },
+        { question: "Как вы оцениваете свой уровень английского языка?", options: ["Высокий", "Средний", "Низкий", "Не знаю"] },
+        { question: "Вы знакомы с грамматикой английского языка?", options: ["Да, очень хорошо", "Да, немного", "Нет, не знаком", "Не уверен"] },
+        { question: "Сколько времени вы готовы уделять изучению языка в неделю?", options: ["Более 10 часов", "5-10 часов", "1-5 часов", "Вообще не готов"] },
+        { question: "Участвовали ли вы когда-нибудь в языковых курсах?", options: ["Да", "Нет, но планирую", "Нет, не планирую"] }
+    ];
+
+    function showQuiz() {
+        const quizContainer = document.getElementById('quiz');
+        questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question');
+            questionDiv.innerHTML = `<h3>${index + 1}. ${q.question}</h3>`;
+            const optionsList = document.createElement('ul');
+            optionsList.classList.add('options');
+
+            q.options.forEach((option, idx) => {
+                const optionItem = document.createElement('li');
+                optionItem.innerHTML = `<input type="radio" name="question${index}" value="${idx}" required> ${option}`;
+                optionsList.appendChild(optionItem);
+            });
+
+            questionDiv.appendChild(optionsList);
+            quizContainer.appendChild(questionDiv);
+        });
+    }
+
+    function calculateResult() {
+        const answers = [];
+        questions.forEach((q, index) => {
+            const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+            answers.push(selectedOption ? selectedOption.nextSibling.nodeValue.trim() : 'Не выбрано');
+        });
+        return answers;
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', () => {
+        const answers = calculateResult();
+        const resultDiv = document.getElementById('result');
+
+        // Получение данных от Telegram Web App
+        const telegramData = Telegram.WebApp.initData; 
+        const user = Telegram.WebApp.initDataUnsafe; // Получение информации о пользователе
+
+        const message = `Ник: ${user.user.first_name} ${user.user.last_name}\nОтветы:\n${answers.map((ans, idx) => `Вопрос ${idx + 1}: ${ans}`).join('\n')}`;
+
+        // Отправка результатов в Telegram
+        fetch(`https://api.telegram.org/botYOUR_BOT_TOKEN/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                chat_id: user.chat.id,
+                text: message
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok) {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = 'Результаты квиза отправлены!';
+            } else {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = 'Ошибка при отправке результата.';
+            }
+        })
+        .catch(error => {
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = 'Ошибка при отправке результата.';
+            console.error('Ошибка:', error);
+        });
+    });
+
+    showQuiz();
+
+    // Telegram.WebApp.init(); // Это может быть не обязательно, но в случае необходимости инициализации веб-функций Telegram
+</script>
+
+</body>
+</html>
