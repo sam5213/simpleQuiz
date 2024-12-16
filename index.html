@@ -93,43 +93,48 @@
         return answers;
     }
 
-    document.getElementById('submitBtn').addEventListener('click', () => {
-        const answers = calculateResult();
-        const resultDiv = document.getElementById('result');
+   document.getElementById('submitBtn').addEventListener('click', () => {
+    const answers = calculateResult();
+    const resultDiv = document.getElementById('result');
 
-        // Получение данных от Telegram Web App
-        const telegramData = Telegram.WebApp.initData; 
-        const user = Telegram.WebApp.initDataUnsafe; // Получение информации о пользователе
+    // Получение данных от Telegram Web App
+    const user = Telegram.WebApp.initDataUnsafe; // Получение информации о пользователе
 
-        const message = `Ник: ${user.user.first_name} ${user.user.last_name}\nОтветы:\n${answers.map((ans, idx) => `Вопрос ${idx + 1}: ${ans}`).join('\n')}`;
+    // Формирование сообщения
+    const message = `Ник: ${user.user.first_name} ${user.user.last_name}\nОтветы:\n${answers.map((ans, idx) => `Вопрос ${idx + 1}: ${ans}`).join('\n')}`;
 
-        // Отправка результатов в Telegram
-        fetch(`https://api.telegram.org/botYOUR_BOT_TOKEN/sendMessage`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                chat_id: user.chat.id,
-                text: message
-            })
+    // Отправка результатов в Telegram
+    fetch(`https://api.telegram.org/botYOUR_BOT_TOKEN/sendMessage`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            chat_id: user.chat.id, // Используем chat_id пользователя
+            text: message
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.ok) {
-                resultDiv.style.display = 'block';
-                resultDiv.innerHTML = 'Результаты квиза отправлены!';
-            } else {
-                resultDiv.style.display = 'block';
-                resultDiv.innerHTML = 'Ошибка при отправке результата.';
-            }
-        })
-        .catch(error => {
+    })
+    .then(response => {
+        console.log('Response:', response);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Data:', data); // Лог ответа от API
+        if (data.ok) {
             resultDiv.style.display = 'block';
-            resultDiv.innerHTML = 'Ошибка при отправке результата.';
-            console.error('Ошибка:', error);
-        });
+            resultDiv.innerHTML = 'Результаты квиза отправлены!';
+        } else {
+            console.error('Ошибка отправки:', data.description);
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = 'Ошибка при отправке результата: ' + data.description;
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка:', error);
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = 'Ошибка при отправке результата.';
     });
+});
 
     showQuiz();
 
