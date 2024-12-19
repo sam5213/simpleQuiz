@@ -54,6 +54,7 @@
     <button id="submitBtn">Отправить ответы</button>
     <div class="result" id="result"></div>
 </div>
+<script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
 <script>
     const questions = [
@@ -63,6 +64,8 @@
         { question: "Сколько времени вы готовы уделять изучению языка в неделю?", options: ["Более 10 часов", "5-10 часов", "1-5 часов", "Вообще не готов"] },
         { question: "Участвовали ли вы когда-нибудь в языковых курсах?", options: ["Да", "Нет, но планирую", "Нет, не планирую"] }
     ];
+
+    let tg = window.Telegram.WebApp;
 
     function showQuiz() {
         const quizContainer = document.getElementById('quiz');
@@ -103,42 +106,14 @@
     // Формирование сообщения
     const message = `Ник: ${user.user.first_name} ${user.user.last_name}\nОтветы:\n${answers.map((ans, idx) => `Вопрос ${idx + 1}: ${ans}`).join('\n')}`;
 
-    // Отправка результатов в Telegram
-    fetch(`https://api.telegram.org/botYOUR_BOT_TOKEN/sendMessage`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            chat_id: user.chat.id, // Используем chat_id пользователя
-            text: message
-        })
-    })
-    .then(response => {
-        console.log('Response:', response);
-        return response.json();
-    })
-    .then(data => {
-        console.log('Data:', data); // Лог ответа от API
-        if (data.ok) {
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = 'Результаты квиза отправлены!';
-        } else {
-            console.error('Ошибка отправки:', data.description);
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = 'Ошибка при отправке результата: ' + data.description;
-        }
-    })
-    .catch(error => {
-        console.error('Ошибка:', error);
-        resultDiv.style.display = 'block';
-        resultDiv.innerHTML = 'Ошибка при отправке результата.';
-    });
-});
+    tg.sendData(message);
+   
+   });
 
     showQuiz();
 
-    Telegram.WebApp.init(); // Это может быть не обязательно, но в случае необходимости инициализации веб-функций Telegram
+    //Telegram.WebApp.init(); // Это может быть не обязательно, но в случае необходимости инициализации веб-функций Telegram
+    tg.close();
 </script>
 
 </body>
