@@ -105,7 +105,7 @@
     const user = Telegram.WebApp.initDataUnsafe; // Получение информации о пользователе
 
     // Формирование сообщения
-    const message = `Ник: ${user.user.first_name} ${user.user.last_name}\nОтветы:\n${answers.map((ans, idx) => `Вопрос ${idx + 1}: ${ans}`).join('\n')}`;
+    const message = `Ник: ${user.user.user_name}\nОтветы:\n${answers.map((ans, idx) => `Вопрос ${idx + 1}: ${ans}`).join('\n')}`;
 
     tg.sendData(message);
    
