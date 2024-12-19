@@ -66,6 +66,7 @@
     ];
 
     let tg = window.Telegram.WebApp;
+    window.Telegram.WebApp.ready();
 
     function showQuiz() {
         const quizContainer = document.getElementById('quiz');
@@ -113,7 +114,7 @@
     showQuiz();
 
     //Telegram.WebApp.init(); // Это может быть не обязательно, но в случае необходимости инициализации веб-функций Telegram
-    tg.close();
+    //tg.close();
 </script>
 
 </body>
