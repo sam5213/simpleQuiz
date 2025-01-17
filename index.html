@@ -108,6 +108,28 @@
     const message = "Ответы:\n${answers.map((ans, idx) => 'Вопрос ${idx + 1}: ${ans}').join('\n')}";
 
     tg.sendData(message);
+
+    function sendGetRequest() {
+    var xhr = new XMLHttpRequest(); // Создаем новый объект XMLHttpRequest
+    var url = "https://wakeupquizbot.glitch.me"; // URL, на который будет отправлен запрос
+
+    xhr.open("GET", url, true); // Инициализируем GET-запрос
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) { // Проверяем, завершен ли запрос
+            if (xhr.status === 200) { // Проверяем, успешен ли ответ
+                console.log("Response:", xhr.responseText); // Выводим ответ в консоль
+            } else {
+                console.error("Error:", xhr.status); // Выводим ошибку, если запрос не успешен
+            }
+        }
+    };
+
+    xhr.send(); // Отправляем запрос
+}
+
+// Вызываем функцию для отправки запроса
+sendGetRequest();
    
    });
 
